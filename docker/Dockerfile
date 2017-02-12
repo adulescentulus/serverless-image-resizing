@@ -11,6 +11,11 @@ RUN yum -y groupinstall "Development Tools" && \
     rpm --install --force ns.rpm && \
     rm --force ns.rpm
 
+COPY build.sh /
+RUN  chmod +x /build.sh
+
 VOLUME /build
 
 WORKDIR /build
+
+CMD /build.sh
