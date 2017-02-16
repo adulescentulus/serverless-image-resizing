@@ -5,12 +5,12 @@ all: package
 image:
 	docker build --tag amazonlinux:nodejs .
 
-package: image
-	docker run --rm --volume ${PWD}/lambda:/build amazonlinux:nodejs npm install --production
+package:
+	docker run --rm --volume ${PWD}/lambda:/var/task --volume lambci-modules:/var/task/node_modules lambci/lambda:build npm install --production
 
 dist: package
-	cd lambda && zip -r ../dist/function.zip *
+	docker run --rm --volume ${PWD}/lambda:/var/task --volume lambci-modules:/var/task/node_modules -v ${PWD}/dist:/dist lambci/lambda:build sh -c 'zip -r /dist/function.zip *'
 
 clean:
-	rm -r lambda/node_modules
-	docker rmi --force amazonlinux:nodejs
+	docker volume ls | grep lambci-modules && docker volume rm lambci-modules || echo no existing volume
+	rm -f ./dist/function.zip
