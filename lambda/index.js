@@ -9,21 +9,21 @@ const URL = process.env.URL;
 
 exports.handler = function(event, context, callback) {
   const key = event.queryStringParameters.key;
-  const match = key.match(/(\d+)x(\d+)\/(.*)/);
+  const match = key.match(/w(\d+)\/(.*)/);
   const width = parseInt(match[1], 10);
-  const height = parseInt(match[2], 10);
-  const originalKey = match[3];
+  const height = null;
+  const originalKey = match[2];
 
   S3.getObject({Bucket: BUCKET, Key: originalKey}).promise()
     .then(data => Sharp(data.Body)
       .resize(width, height)
-      .toFormat('png')
+      .toFormat('jpeg')
       .toBuffer()
     )
     .then(buffer => S3.putObject({
         Body: buffer,
         Bucket: BUCKET,
-        ContentType: 'image/png',
+        ContentType: 'image/jpeg',
         Key: key,
       }).promise()
     )

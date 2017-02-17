@@ -33,8 +33,8 @@ Resources:
       CodeUri: ./dist/function.zip
       Handler: index.handler
       Runtime: nodejs6.10
-      MemorySize: 1536
-      Timeout: 60
+      MemorySize: 256
+      Timeout: 20
       Environment:
         Variables:
           BUCKET: !Ref ImageBucket
