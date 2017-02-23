@@ -7,21 +7,26 @@ var URL = process.env.URL;
 
 exports.handler = function(event, context) {
   var key = event.queryStringParameters.key;
-  var match = key.match(/w(\d+)\/(.*)/);
-  var width = parseInt(match[1], 10);
-  var height = null;
-  var originalKey = match[2];
+  var match = key.match(/(\d*)x(\d*)\/(.*)/);
+  var width = parseInt(match[1], 10) || null;
+  var height = parseInt(match[2], 10) || null;
+  var originalKey = match[3];
+
+  var contentType;
 
   S3.getObject({Bucket: BUCKET, Key: originalKey}).promise()
-    .then((data) => Sharp(data.Body)
+    .then(function(data) {
+        contentType=data.ContentType;
+        return Sharp(data.Body)
+        .rotate()
         .resize(width, height)
-        .toFormat('jpeg')
         .toBuffer()
+      }
     )
     .then((buffer) => S3.putObject({
         Body: buffer,
         Bucket: BUCKET,
-        ContentType: 'image/jpeg',
+        ContentType: contentType,
         Key: key
       }).promise()
     )

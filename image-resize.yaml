@@ -2,6 +2,12 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Transform: AWS::Serverless-2016-10-31
 
+Parameters:
+  ImageBucketName:
+    Default: img.networkchallenge.de
+    Type: String
+    MinLength: 1
+    
 Resources:
   Api:
     Type: AWS::Serverless::Api
@@ -15,6 +21,7 @@ Resources:
     Type: AWS::S3::Bucket
     DeletionPolicy: Retain
     Properties:
+      BucketName: !Ref ImageBucketName
       AccessControl: PublicRead
       WebsiteConfiguration:
         IndexDocument: index.html
