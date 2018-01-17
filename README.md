@@ -28,9 +28,9 @@ The complete setup can be done with Docker. Therefore you only need to [install]
 
 	Upload an image to the S3 bucket and try to resize it via your web browser to different sizes, e.g. with an image uploaded in the bucket called image.png:
 
-	- http://[BucketWebsiteHost]/300x300/image.png
-	- http://[BucketWebsiteHost]/90x90/image.png
-	- http://[BucketWebsiteHost]/40x40/image.png
+	- http://[BucketWebsiteHost]/300x300/path/to/image.png
+	- http://[BucketWebsiteHost]/90x90/path/to/image.png
+	- http://[BucketWebsiteHost]/40x40/path/to/image.png
 
 	You can find the BucketWebsiteUrl in the table of outputs displayed on a successful invocation of the deploy script.
 
