@@ -14,15 +14,13 @@ The complete setup can be done with Docker. Therefore you only need to [install]
 
    - Upload the contents of the `lambda` subdirectory to a [Amazon EC2 instance running Amazon Linux][amazon-linux] and run `npm install`, or
 
-   - Use the Amazon Linux Docker container image to build the package using your local system. This repo includes Makefile that will download Amazon Linux, install Node.js and developer tools, and build the extensions using Docker. Run `make all`.
+   - Use the lambci/lambda:build-nodejs6.10 Docker image to build the package using your local system. Run `docker run --rm --volume //${PWD}:/var/task lambci/lambda:build-nodejs6.10 sh -c "cd lambda && zip -r ../dist/function.zip *"`.
 
 1. Deploy the CloudFormation stack
 
-  The deployment script requires the [AWS CLI][cli] version 1.11.19 or newer to be installed. This is brought to you by using the previously built Docker image. You need to have you AWS configuration in a folder `.aws` next to this project dir. As first time user you have to run `make awsconfigure`.
+  The deployment script requires the [AWS CLI][cli] version 1.11.19 or newer to be installed. This is brought to you by using my own Docker image [grolland/aws-cli][dockeraws]. You need to provide your AWS credentials as environment variables. It is best to put _AWS_DEFAULT_REGION_, _AWS_ACCESS_KEY_ID_ and _AWS_SECRET_ACCESS_KEY_ in a properties file and pass it to the Docker container.
 
-  Run `make deploy` to deploy the CloudFormation stack. It will create a temporary Amazon S3 bucket, package and upload the function, and create the Lambda function, Amazon API Gateway REST API, and an S3 bucket for images via CloudFormation.
-
-  Please be aware that you might prefix the _deploy_ target in the _Makefile_ with `winpty` depending on your environment under Windows!
+  Deploy everything with `docker run --rm -it --env-file ../../aws/.aws -e STACK_NAME=Resize-Develop -v //${PWD}:/build --entrypoint bash grolland/aws-cli -c "bin/deploy"`
 
 1. Test the function
 
@@ -45,3 +43,4 @@ This reference architecture sample is [licensed][license] under Apache 2.0.
 [amazon-linux]: https://aws.amazon.com/blogs/compute/nodejs-packages-in-lambda/
 [cli]: https://aws.amazon.com/cli/
 [docker]: https://www.docker.com/products/docker
+[dockeraws]: https://hub.docker.com/r/grolland/aws-cli/
