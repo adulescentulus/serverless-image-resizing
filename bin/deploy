@@ -2,30 +2,32 @@
 
 set -o errexit
 
-stack_name=ServerlessImageResize
-region="$(aws configure get region)"
-bucket_name="temp-serverless-resize-$(openssl rand -hex 8)"
+infra_stack_name=nc-infrastructure
+stack_name=BNC-ServerlessImageResize
+bucket_name="nc-infrastructure-infrabucket-1qrzmjyascfar"
 account_id="$(aws sts get-caller-identity --query Account --output text \
   | xargs echo -n)"
 
 set -o xtrace
 
-sed -e "s/REGION/${region}/g" -e "s/ACCOUNT_ID/${account_id}/g" \
+sed -e "s/REGION/${AWS_DEFAULT_REGION}/g" -e "s/ACCOUNT_ID/${account_id}/g" \
   api-template.yaml > deploy/api.yaml
 
-aws s3 mb "s3://${bucket_name}"
+#aws s3 mb "s3://${bucket_name}"
 
 aws cloudformation package \
   --output-template-file=deploy/output.yaml \
   --template-file=image-resize.yaml \
   --s3-bucket="${bucket_name}" \
+  --s3-prefix="${stack_name}"
 
 aws cloudformation deploy \
   --template-file=deploy/output.yaml \
   --stack-name="${stack_name}" \
-  --capabilities=CAPABILITY_NAMED_IAM
+  --capabilities=CAPABILITY_NAMED_IAM \
+  --parameter-overrides ImageBucketName=img.networkchallenge.de
 
-aws s3 rb --force "s3://${bucket_name}"
+#aws s3 rb --force "s3://${bucket_name}"
 
 aws cloudformation describe-stacks \
   --stack-name "${stack_name}" \

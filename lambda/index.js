@@ -10,22 +10,27 @@ const BUCKET = process.env.BUCKET;
 const URL = process.env.URL;
 
 exports.handler = function(event, context, callback) {
-  const key = event.queryStringParameters.key;
-  const match = key.match(/w(\d+)\/(.*)/);
-  const width = parseInt(match[1], 10);
-  const height = null;
-  const originalKey = match[2];
+    const key = event.queryStringParameters.key;
+    const match = key.match(/(\d*)x(\d*)\/(.*)/);
+    const width = parseInt(match[1], 10) || null;
+    const height = parseInt(match[2], 10) || null;
+    const originalKey = match[3];
+
+    var contentType;
 
   S3.getObject({Bucket: BUCKET, Key: originalKey}).promise()
-    .then(data => Sharp(data.Body)
-      .resize(width, height)
-      .toFormat('jpeg')
-      .toBuffer()
+    .then(function(data) {
+            contentType=data.ContentType;
+            return Sharp(data.Body)
+                .rotate()
+                .resize(width, height)
+                .toBuffer()
+        }
     )
     .then(buffer => S3.putObject({
         Body: buffer,
         Bucket: BUCKET,
-        ContentType: 'image/jpeg',
+        ContentType: contentType,
         Key: key,
       }).promise()
     )
