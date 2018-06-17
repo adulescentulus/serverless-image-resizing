@@ -7,17 +7,19 @@ if [ -z "$STACK_NAME" ]; then
     exit 1
 fi
 if [ "$STACK_NAME" = "BNC-ServerlessImageResize" ]; then
-    IMG_BUCKET=img.networkchallenge.de
+    IMG_BUCKET=imgs.networkchallenge.de
 else
     IMG_BUCKET=img-${STACK_NAME,,}
     echo using image bucket $IMG_BUCKET
 fi
 
-bucket_name="nc-infrastructure-infrabucket-1qrzmjyascfar"
+bucket_name="nc-blog-imgresize-tmp"
 account_id="$(aws sts get-caller-identity --query Account --output text \
   | xargs echo -n)"
 
 set -o xtrace
+
+aws s3 mb "s3://${bucket_name}"
 
 sed -e "s/REGION/${AWS_DEFAULT_REGION}/g" -e "s/ACCOUNT_ID/${account_id}/g" \
   api-template.yaml > deploy/api.yaml
@@ -33,6 +35,8 @@ aws cloudformation deploy \
   --stack-name="${STACK_NAME}" \
   --capabilities=CAPABILITY_NAMED_IAM \
   --parameter-overrides ImageBucketName=$IMG_BUCKET
+
+aws s3 rb --force "s3://${bucket_name}"
 
 aws cloudformation describe-stacks \
   --stack-name "${STACK_NAME}" \
