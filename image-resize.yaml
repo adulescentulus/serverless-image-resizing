@@ -71,9 +71,38 @@ Resources:
             Effect: Allow
             Principal: "*"
             Resource: !Sub arn:aws:s3:::${ImageBucket}/*
-
+  ApexCloudFront:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Aliases:
+          - !Ref ImageBucketName
+        Enabled: True
+        Origins:
+          - DomainName: !Select
+              - 1
+              - !Split ["//", !GetAtt ImageBucket.WebsiteURL]
+            Id: origin
+            CustomOriginConfig:
+              OriginProtocolPolicy: http-only
+        DefaultCacheBehavior:
+          TargetOriginId: origin
+          DefaultTTL: 5
+          MaxTTL: 30
+          ForwardedValues:
+            QueryString: false
+          ViewerProtocolPolicy: redirect-to-https
+        ViewerCertificate:
+          AcmCertificateArn: arn:aws:acm:us-east-1:301713784098:certificate/464ae195-cb39-4c00-bbc3-ad5bf869f69e
+          SslSupportMethod: sni-only
 Outputs:
   BucketWebsiteUrl:
     Value: !GetAtt ImageBucket.WebsiteURL
   Bucket:
     Value: !Ref ImageBucket
+  ApexCloudFrontDomain:
+    Description: >-
+      The CloudFront domain name for the Apex
+      domain that we can use to add a CNAME to
+      later.
+    Value: !GetAtt ApexCloudFront.DomainName
