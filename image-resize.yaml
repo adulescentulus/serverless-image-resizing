@@ -45,7 +45,10 @@ Resources:
       Environment:
         Variables:
           BUCKET: !Ref ImageBucket
-          URL: !GetAtt ImageBucket.WebsiteURL
+          URL: !Join
+            - ''
+            - - 'https://'
+              - !Ref ImageBucketName
       Policies:
           Statement:
             - Resource: !Sub arn:aws:s3:::${ImageBucket}/*
