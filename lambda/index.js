@@ -8,6 +8,7 @@ const Sharp = require('sharp');
 
 const BUCKET = process.env.BUCKET;
 const URL = process.env.URL;
+const cachecontrol = 'max-age=2419200'
 
 exports.handler = function(event, context, callback) {
     const key = event.queryStringParameters.key;
@@ -31,6 +32,7 @@ exports.handler = function(event, context, callback) {
         Body: buffer,
         Bucket: BUCKET,
         ContentType: contentType,
+        CacheControl: cachecontrol,
         Key: key,
       }).promise()
     )
