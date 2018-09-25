@@ -98,6 +98,30 @@ Resources:
         ViewerCertificate:
           AcmCertificateArn: arn:aws:acm:us-east-1:301713784098:certificate/464ae195-cb39-4c00-bbc3-ad5bf869f69e
           SslSupportMethod: sni-only
+  S3UploadPolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowUserToSeeBucketListInTheConsole
+            Action:
+              - 's3:ListAllMyBuckets'
+            Effect: Allow
+            Resource: '*'
+          - Sid: AllowUserAllS3Actions
+            Action: 's3:*'
+            Effect: Allow
+            Resource:
+              - !Sub arn:aws:s3:::${ImageBucket}
+              - !Sub arn:aws:s3:::${ImageBucket}/*
+      PolicyName: S3ImageUpload
+      Users:
+        - !Ref UserImgUpload
+  UserImgUpload:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: cfn-generic-img-uploader
 Outputs:
   BucketWebsiteUrl:
     Value: !GetAtt ImageBucket.WebsiteURL
