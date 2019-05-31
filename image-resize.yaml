@@ -96,7 +96,7 @@ Resources:
   UserImgUpload:
     Type: AWS::IAM::User
     Properties:
-      UserName: cfn-generic-img-uploader
+      UserName: cfn-generic-img-uploader-test
 Outputs:
   BucketWebsiteUrl:
     Value: !GetAtt ImageBucket.WebsiteURL
