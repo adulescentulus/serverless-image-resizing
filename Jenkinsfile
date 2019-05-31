@@ -39,7 +39,7 @@ pipeline {
                 AWS_DEFAULT_REGION = 'eu-central-1'
                 AWS_ACCESS_KEY_ID = credentials('AWS_KEY_IMGRESIZE_ID')
                 AWS_SECRET_ACCESS_KEY = credentials('AWS_KEY_IMGRESIZE_KEY')
-                STACK_NAME = 'BNC-ServerlessImageResize'
+                STACK_NAME = 'BNC-ResizeTest'
             }
             steps {
                 s3Upload consoleLogLevel: 'INFO', dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'nc-infra-cfn-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: true, selectedRegion: 'eu-central-1', showDirectlyInBrowser: false, sourceFile: 'dist/*.zip', storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'ARTIFACTS', userMetadata: []
