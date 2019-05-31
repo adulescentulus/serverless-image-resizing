@@ -15,7 +15,7 @@ pipeline {
         stage('Build') {
             agent {
                 docker { 
-                    image 'lambci/lambda:build-nodejs6.10'
+                    image 'lambci/lambda:build-nodejs8.10'
                     reuseNode true 
                 }
             }
